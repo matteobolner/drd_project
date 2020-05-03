@@ -1,13 +1,16 @@
 ---
-title: "Identification of a DNA methylation signature in blood cells from persons with Down Syndrome"
-output: html_notebook
+title: Identification of a DNA methylation signature in blood cells from persons with
+  Down Syndrome
+output:
+  pdf_document: default
+  html_notebook: default
 ---
 Matteo Bolner , University of Bologna
 
 Reference article: https://www.ncbi.nlm.nih.gov/pubmed/25701644
 
 From the abstract:  
-Down Syndrome (DS) is characterized by a wide spectrum of clinical signs, which include segmental premature aging of central nervous and immune systems. Although it is well established that the causative defect of DS is the trisomy of chromosome 21, the molecular bases of its phenotype are still largely unknown. We used the Infinium HumanMethylation450 BeadChip to investigate DNA methylation patterns in whole blood from 29 DS persons, using their relatives (mothers and unaffected siblings) as controls. This family-based model allowed us to monitor possible confounding effects on DNA methylation patterns deriving from genetic and environmental factors. Although differentially methylated regions (DMRs) displayed a genome-wide distribution, they were enriched on chromosome 21. 
+Down Syndrome (DS) is characterized by a wide spectrum of clinical signs, which include segmental premature aging of central nervous and immune systems. Although it is well established that the causative defect of DS is the trisomy of chromosome 21, the molecular bases of its phenotype are still largely unknown. We used the Infinium HumanMethylation450 BeadChip to investigate DNA methylation patterns in whole blood from 29 DS persons, using their relatives (mothers and unaffected siblings) as controls. This family-based model allowed us to monitor possible confounding effects on DNA methylation patterns deriving from genetic and environmental factors. Although differentially methylated regions (DMRs) displayed a genome-wide distribution, they were enriched on chromosome 21.
 
 
 
@@ -43,7 +46,7 @@ load("/home/pelmo/R_wd/Illumina450Manifest_clean.RData")
 
 
 ```{r}
-targets <- read.metharray.sheet("/home/pelmo/drd_project/data/")
+targets <- read.metharray.sheet("/home/pelmo/drd_project/data/Input_data/")
 RGset <- read.metharray.exp(targets=targets)
 ```
 
@@ -56,8 +59,6 @@ kable(targets) %>% kable_styling("bordered")
 ```{r}
 Red <- data.frame(getRed(RGset))
 Green <- data.frame(getGreen(RGset))
-dim(Red)
-dim(Green)
 ```
 
 
@@ -166,10 +167,10 @@ m <- getM(MSet.raw)
 ```{r}
 #kable(targets) %>% kable_styling("bordered")
 wt_samples <- targets[targets$Group=="WT",]
-wt_samples_names <- sub("/home/pelmo/drd_project/data//Input_data/", "", wt_samples$Basename)
+wt_samples_names <- sub("/home/pelmo/drd_project/data/Input_data/", "", wt_samples$Basename)
 wt_samples_names
 ds_samples <- targets[targets$Group=="DS",]
-ds_samples_names <- sub("/home/pelmo/drd_project/data//Input_data/", "", ds_samples$Basename)
+ds_samples_names <- sub("/home/pelmo/drd_project/data/Input_data/", "", ds_samples$Basename)
 ds_samples_names
 
 ```
@@ -234,8 +235,7 @@ sd_beta_II <- apply(beta_II, 1, sd)
 ```
 
 ```{r}
-preprocess_Noob_data <- preprocessNoob(RGset)
-#preprocess_Noob_data
+preprocess_Noob_data <- preprocessNoob(RGset) 
 ```
 
 ```{r}
@@ -287,7 +287,7 @@ Overall, the normalization procedure implemented allows to significantly reduce 
 
 <br></br>
 
-### 8. Consider the normalized beta and M values and remove the probes previously defined as bad according to the detection pValue (see script Lesson5_2019)
+### 8. Consider the normalized beta and M values and remove the probes previously defined as bad according to the detection pValue.
 
 ```{r}
 preprocess_Noob_m <- getM(preprocess_Noob_data)
@@ -328,7 +328,7 @@ pca_beta <- prcomp(t(preprocess_Noob_beta_clean), scale=T)
 phenotype <- read.csv("data/Input_data/Samplesheet_report.csv", sep=",")
 print(summary(pca_beta))
 plot(pca_beta$x[,1], pca_beta$x[,2], cex=2, xlab="PC1", ylab="PC2", xlim=c(-1000,1000), col=c("red","black")[as.numeric(phenotype$Group)])
-legend("bottomright", legend=levels(phenotype$Group), col=c("red","black"), pch=1)
+#legend("bottomright", legend=levels(phenotype$Group), col=c("red","black"), pch=1)
 ```
 The prcomp function was chosen rather than pcicomp, due to the low number of samples analyzed; the first two principal components (PC) were plotted. Due to the relatively low cumulative proportion of variance between the two PCs (0.48) and the small sample size, it can be concluded that the data is not affected by any batch effect.
 
@@ -466,8 +466,8 @@ heatmap.2(heatmap_matrix,col=terrain.colors(100),Rowv=T,Colv=T,hclustfun = funct
 ```
 
 
-Optional
-As DS is caused by the trisomy of chromosome 21, try also to plot the density of the methylation values of the probes mapping on chromosome 21. Do you see a very clear difference between the samples? How many differentially methylated probes do you find on chromosome 21?
+### Optional
+### As DS is caused by the trisomy of chromosome 21, try also to plot the density of the methylation values of the probes mapping on chromosome 21. Do you see a very clear difference between the samples? How many differentially methylated probes do you find on chromosome 21?
 
 
 
